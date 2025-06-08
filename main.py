@@ -28,42 +28,45 @@ Assumptions:
 """
 
 
-def validate_amount(number, is_weekly_budget, day_name=None):
+def validate_amount( is_weekly_budget, day_name=None):
     default_day_expenses = 100
-    try:
-        number = float(number)
-    except ValueError:
-        print(f"❌ You entered '{number}', it is not a number!\nPlease, try again!")
-        sys.exit(1)
+    while True:
+        number = input(
+            f"Please enter your {'total weekly budget' if is_weekly_budget else f'expenses for {day_name}'} (positive number, in dollars):\n"
+        )
 
-    if is_weekly_budget:
-        if number <= 0:
-            if number == 0:
-                print("💸 You have $0 to spend, you should try to find a job!")
+        try:
+            number = float(number)
+        except ValueError:
+            print(f"❌ You entered '{number}', it is not a number!\nPlease, try again!")
+            continue
+
+        if is_weekly_budget:
+            if number <= 0:
+                if number == 0:
+                    print("💸 You have $0 to spend, you should try to find a job!")
+                else:
+                    print("❌ Your amount is negative, please try again!")
             else:
-                print("❌ Your amount is negative, please try again!")
-            sys.exit(1)
+                print(
+                    f"Your budget for this week is ${number:.2f}. Not bad!\nLet the game begin...🤡"
+                )
+                break
         else:
-            print(
-                f"Your budget for this week is ${number:.2f}. Not bad!\nLet the game begin...🤡"
-            )
-    else:
-        if number < 0:
-            print(
-                f"❌ Expenses cannot be negative. Setting default expenses = {default_day_expenses}."
-            )
-            number = default_day_expenses
-        print(f"Your daily expenses for {day_name} are ${number:.2f}")
+            if number < 0:
+                print(
+                    f"❌ Expenses cannot be negative. Setting default expenses = {default_day_expenses}."
+                )
+                number = default_day_expenses
+            print(f"Your daily expenses for {day_name} are ${number:.2f}")
+            break
 
     return number
 
 
-weekly_budget = input(
-    "Please enter your total weekly budget (positive number, in dollars):\n"
-)
 total_expenses = 0
 
-weekly_budget = validate_amount(weekly_budget, True)
+weekly_budget = validate_amount(True)
 
 days_of_week = (
     "Monday",
@@ -76,10 +79,7 @@ days_of_week = (
 )
 
 for day in days_of_week:
-    daily_expenses = input(
-        f"Please enter your daily expenses for {day} (positive number, in dollars):\n"
-    )
-    daily_expenses = validate_amount(daily_expenses, False, day)
+    daily_expenses = validate_amount(False, day)
     total_expenses += daily_expenses
     weekly_budget -= daily_expenses
     if weekly_budget > 0:
