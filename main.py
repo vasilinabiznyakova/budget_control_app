@@ -31,9 +31,9 @@ Assumptions:
 def validate_amount(number, is_weekly_budget, day_name=None):
     default_day_expenses = 100
     try:
-        number = int(number)
+        number = float(number)
     except ValueError:
-        print(f'❌ You entered "{number}", it is not a number!\nPlease, try again!')
+        print(f"❌ You entered '{number}', it is not a number!\nPlease, try again!")
         sys.exit(1)
 
     if is_weekly_budget:
@@ -45,7 +45,7 @@ def validate_amount(number, is_weekly_budget, day_name=None):
             sys.exit(1)
         else:
             print(
-                f"Your budget for this week is ${number}. Not bad!\nLet the game begin...🤡"
+                f"Your budget for this week is ${number:.2f}. Not bad!\nLet the game begin...🤡"
             )
     else:
         if number < 0:
@@ -53,7 +53,7 @@ def validate_amount(number, is_weekly_budget, day_name=None):
                 f"❌ Expenses cannot be negative. Setting default expenses = {default_day_expenses}."
             )
             number = default_day_expenses
-        print(f"Your daily expenses for {day_name} are ${number}")
+        print(f"Your daily expenses for {day_name} are ${number:.2f}")
 
     return number
 
@@ -61,10 +61,44 @@ def validate_amount(number, is_weekly_budget, day_name=None):
 weekly_budget = input(
     "Please enter your total weekly budget (positive number, in dollars):\n"
 )
+total_expenses = 0
+
 weekly_budget = validate_amount(weekly_budget, True)
 
-day_name = "Monday"
-daily_expenses = input(
-    f"Please enter your daily expenses for {day_name} (positive number, in dollars):\n"
+days_of_week = (
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
 )
-daily_expenses = validate_amount(daily_expenses, False, day_name)
+
+for day in days_of_week:
+    daily_expenses = input(
+        f"Please enter your daily expenses for {day} (positive number, in dollars):\n"
+    )
+    daily_expenses = validate_amount(daily_expenses, False, day)
+    total_expenses += daily_expenses
+    weekly_budget -= daily_expenses
+    if weekly_budget > 0:
+        print(f"💵 By the end of {day} you have ${weekly_budget:.2f} left!")
+    elif weekly_budget == 0:
+        print(
+            f"💸 By the end of {day} you have ${weekly_budget:.2f} left! Now you need to save"
+        )
+    else:
+        print(f"🚫 You are completely out of budget, don't buy anything else")
+
+# Final report
+print(f"\n✅ End of the week summary!")
+print(f"\nTotal spent:{total_expenses:.2f}")
+print(f"Total left:{weekly_budget:.2f}")
+
+if weekly_budget < 0:
+    print(f"❌ You have overspent by ${abs(weekly_budget):.2f}")
+else:
+    print(f"✅ Congratulations! You saved ${weekly_budget:.2f} this week!")
+
+print("\nThanks for using the Budget App 🤡💸")
